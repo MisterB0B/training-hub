@@ -1,0 +1,1082 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <title>GM Manual | The Light Park</title>
+  <style>
+    :root {
+      --bg: #0B0D14;
+      --surface: #12151F;
+      --surface2: #1a1e2e;
+      --border: #2a2f42;
+      --text: #f0f0f5;
+      --text-dim: #8888a0;
+      --purple: #a855f7;
+      --teal: #06d6a0;
+      --green: #22c55e;
+      --red: #ef4444;
+      --gold: #eab308;
+      --kringle: #c41e3a;
+    }
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      line-height: 1.7;
+    }
+    
+    /* Layout */
+    .layout {
+      display: grid;
+      grid-template-columns: 280px 1fr;
+      min-height: 100vh;
+    }
+    
+    /* Sidebar */
+    .sidebar {
+      background: var(--surface);
+      border-right: 1px solid var(--border);
+      position: sticky;
+      top: 0;
+      height: 100vh;
+      overflow-y: auto;
+      padding: 20px 0;
+    }
+    .sidebar-header {
+      padding: 0 20px 20px;
+      border-bottom: 1px solid var(--border);
+      margin-bottom: 16px;
+    }
+    .sidebar-header h1 {
+      font-size: 18px;
+      font-weight: 800;
+      color: var(--purple);
+    }
+    .sidebar-header p {
+      font-size: 12px;
+      color: var(--text-dim);
+      margin-top: 4px;
+    }
+    
+    /* Search */
+    .search-box {
+      padding: 0 16px;
+      margin-bottom: 16px;
+    }
+    .search-box input {
+      width: 100%;
+      padding: 10px 14px;
+      background: var(--surface2);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      color: var(--text);
+      font-size: 14px;
+    }
+    .search-box input::placeholder { color: var(--text-dim); }
+    
+    /* TOC */
+    .toc { list-style: none; }
+    .toc-item {
+      border-left: 3px solid transparent;
+    }
+    .toc-item.active {
+      border-left-color: var(--purple);
+      background: rgba(168, 85, 247, 0.1);
+    }
+    .toc-link {
+      display: block;
+      padding: 10px 20px;
+      color: var(--text-dim);
+      text-decoration: none;
+      font-size: 13px;
+      transition: all 0.2s;
+    }
+    .toc-link:hover {
+      color: var(--text);
+      background: var(--surface2);
+    }
+    .toc-item.active .toc-link {
+      color: var(--purple);
+      font-weight: 600;
+    }
+    .toc-number {
+      color: var(--purple);
+      font-weight: 700;
+      margin-right: 8px;
+    }
+    
+    /* Main Content */
+    .main {
+      padding: 40px 60px;
+      max-width: 900px;
+    }
+    
+    /* Header */
+    .manual-header {
+      text-align: center;
+      margin-bottom: 48px;
+      padding-bottom: 32px;
+      border-bottom: 1px solid var(--border);
+    }
+    .manual-header h1 {
+      font-size: 36px;
+      font-weight: 800;
+      background: linear-gradient(135deg, var(--purple), var(--teal));
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      margin-bottom: 8px;
+    }
+    .manual-header p { color: var(--text-dim); }
+    
+    /* Sections */
+    .section {
+      margin-bottom: 48px;
+      scroll-margin-top: 20px;
+    }
+    .section-header {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      margin-bottom: 20px;
+      cursor: pointer;
+    }
+    .section-number {
+      background: var(--purple);
+      color: white;
+      width: 36px;
+      height: 36px;
+      border-radius: 8px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: 800;
+      font-size: 16px;
+      flex-shrink: 0;
+    }
+    .section-title {
+      font-size: 24px;
+      font-weight: 700;
+    }
+    .section-toggle {
+      margin-left: auto;
+      color: var(--text-dim);
+      font-size: 20px;
+    }
+    
+    .section-content {
+      padding-left: 48px;
+    }
+    .section.collapsed .section-content {
+      display: none;
+    }
+    
+    /* Subsections */
+    .subsection {
+      margin-bottom: 24px;
+    }
+    .subsection h3 {
+      font-size: 18px;
+      font-weight: 700;
+      color: var(--teal);
+      margin-bottom: 12px;
+    }
+    .subsection h4 {
+      font-size: 15px;
+      font-weight: 600;
+      color: var(--text);
+      margin: 16px 0 8px;
+    }
+    
+    /* Content */
+    p { margin-bottom: 12px; }
+    ul, ol {
+      margin: 12px 0 12px 24px;
+    }
+    li { margin-bottom: 6px; }
+    
+    /* Kringle's Korner */
+    .kringle {
+      background: linear-gradient(135deg, rgba(196, 30, 58, 0.15), rgba(196, 30, 58, 0.05));
+      border: 1px solid rgba(196, 30, 58, 0.3);
+      border-left: 4px solid var(--kringle);
+      border-radius: 8px;
+      padding: 16px 20px;
+      margin: 20px 0;
+    }
+    .kringle-header {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      font-weight: 700;
+      color: var(--kringle);
+      margin-bottom: 8px;
+    }
+    .kringle p {
+      margin: 0;
+      font-style: italic;
+      color: var(--text);
+    }
+    
+    /* Five Pillars */
+    .pillars {
+      display: grid;
+      gap: 12px;
+      margin: 16px 0;
+    }
+    .pillar {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      padding: 16px;
+    }
+    .pillar-title {
+      font-weight: 700;
+      color: var(--purple);
+      margin-bottom: 6px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    .pillar-num {
+      background: var(--purple);
+      color: white;
+      width: 24px;
+      height: 24px;
+      border-radius: 6px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 12px;
+      font-weight: 700;
+    }
+    .pillar p { margin: 0; font-size: 14px; color: var(--text-dim); }
+    
+    /* Checklist */
+    .checklist {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      padding: 16px;
+      margin: 16px 0;
+    }
+    .checklist-title {
+      font-weight: 700;
+      margin-bottom: 12px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    .checklist-item {
+      display: flex;
+      align-items: flex-start;
+      gap: 10px;
+      padding: 8px 0;
+      border-bottom: 1px solid var(--border);
+    }
+    .checklist-item:last-child { border-bottom: none; }
+    .check-box {
+      width: 20px;
+      height: 20px;
+      border: 2px solid var(--border);
+      border-radius: 4px;
+      flex-shrink: 0;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin-top: 2px;
+    }
+    .check-box.checked {
+      background: var(--green);
+      border-color: var(--green);
+      color: white;
+    }
+    
+    /* Mobile */
+    @media (max-width: 900px) {
+      .layout {
+        grid-template-columns: 1fr;
+      }
+      .sidebar {
+        display: none;
+        position: fixed;
+        left: 0;
+        top: 0;
+        width: 280px;
+        z-index: 1000;
+      }
+      .sidebar.open { display: block; }
+      .main { padding: 20px; }
+      .section-content { padding-left: 0; }
+      .mobile-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 16px;
+        background: var(--surface);
+        border-bottom: 1px solid var(--border);
+        position: sticky;
+        top: 0;
+        z-index: 100;
+      }
+      .menu-btn {
+        padding: 8px 16px;
+        background: var(--purple);
+        border: none;
+        border-radius: 8px;
+        color: white;
+        font-weight: 600;
+        cursor: pointer;
+      }
+    }
+    @media (min-width: 901px) {
+      .mobile-header { display: none; }
+    }
+    
+    /* Print */
+    @media print {
+      .sidebar, .mobile-header { display: none; }
+      .layout { grid-template-columns: 1fr; }
+      .main { padding: 20px; max-width: 100%; }
+      .section.collapsed .section-content { display: block; }
+    }
+  </style>
+</head>
+<body>
+  <div class="mobile-header">
+    <h1 style="font-size: 16px;">🎄 GM Manual</h1>
+    <button class="menu-btn" onclick="toggleSidebar()">☰ Contents</button>
+  </div>
+  
+  <div class="layout">
+    <aside class="sidebar" id="sidebar">
+      <div class="sidebar-header">
+        <h1>🎄 GM Manual</h1>
+        <p>The Light Park 2026</p>
+      </div>
+      
+      <div class="search-box">
+        <input type="text" id="searchInput" placeholder="🔍 Search..." oninput="searchManual(this.value)">
+      </div>
+      
+      <ul class="toc" id="toc">
+        <li class="toc-item active"><a href="#intro" class="toc-link">Introduction</a></li>
+        <li class="toc-item"><a href="#s1" class="toc-link"><span class="toc-number">1</span>Labor Management</a></li>
+        <li class="toc-item"><a href="#s2" class="toc-link"><span class="toc-number">2</span>Guest Experience</a></li>
+        <li class="toc-item"><a href="#s3" class="toc-link"><span class="toc-number">3</span>Operations & Site</a></li>
+        <li class="toc-item"><a href="#s4" class="toc-link"><span class="toc-number">4</span>Park Opening</a></li>
+        <li class="toc-item"><a href="#s5" class="toc-link"><span class="toc-number">5</span>Scheduling & Breaks</a></li>
+        <li class="toc-item"><a href="#s6" class="toc-link"><span class="toc-number">6</span>Daily Operations</a></li>
+        <li class="toc-item"><a href="#s7" class="toc-link"><span class="toc-number">7</span>Guest Arrival</a></li>
+        <li class="toc-item"><a href="#s8" class="toc-link"><span class="toc-number">8</span>Nightly Shutdown</a></li>
+        <li class="toc-item"><a href="#s9" class="toc-link"><span class="toc-number">9</span>HR & Staff</a></li>
+        <li class="toc-item"><a href="#s10" class="toc-link"><span class="toc-number">10</span>Inventory</a></li>
+        <li class="toc-item"><a href="#s11" class="toc-link"><span class="toc-number">11</span>Cash Handling</a></li>
+        <li class="toc-item"><a href="#s12" class="toc-link"><span class="toc-number">12</span>Guest Feedback</a></li>
+        <li class="toc-item"><a href="#s13" class="toc-link"><span class="toc-number">13</span>Emergency & Safety</a></li>
+        <li class="toc-item"><a href="#s14" class="toc-link"><span class="toc-number">14</span>Lost & Found</a></li>
+        <li class="toc-item"><a href="#s15" class="toc-link"><span class="toc-number">15</span>Vehicle & Traffic</a></li>
+        <li class="toc-item"><a href="#s16" class="toc-link"><span class="toc-number">16</span>Maintenance</a></li>
+        <li class="toc-item"><a href="#s17" class="toc-link"><span class="toc-number">17</span>End of Season</a></li>
+        <li class="toc-item"><a href="#appendix" class="toc-link">📎 Appendix</a></li>
+      </ul>
+    </aside>
+    
+    <main class="main">
+      <div class="manual-header">
+        <h1>🎄 General Manager Manual</h1>
+        <p>The Light Park Operations Guide — 2026 Season</p>
+      </div>
+      
+      <!-- INTRODUCTION -->
+      <section class="section" id="intro">
+        <div class="section-header" onclick="toggleSection(this)">
+          <div class="section-number">🎄</div>
+          <h2 class="section-title">Introduction</h2>
+          <span class="section-toggle">−</span>
+        </div>
+        <div class="section-content">
+          <p>Welcome to The Light Park! As a General Manager, you are at the heart of delivering an unforgettable holiday experience for every guest who drives through our gates.</p>
+          <p>This manual is here to guide you through every aspect of park operations, including guest interaction, safety, staff leadership, nightly shutdowns, and everything in between. Think of it as your playbook for creating magic, keeping things running smoothly, and being the go-to leader your team looks to when the lights are on and the pressure is high.</p>
+          <p>Each section offers practical guidance, clear expectations, and step-by-step instructions. You will find tips, checklists, and key reminders to help you handle everything from peak traffic jams to uplifting a tired team on a cold night. We have also included <strong>"Kringle's Korner"</strong> insights—small nuggets of inspiration or best practices.</p>
+          <p>Use this manual daily, refer to it often, and do not hesitate to jot down notes or adapt techniques to your park's unique flow. Your ability to balance efficiency, safety, and joy will define the experience for thousands of guests this season.</p>
+          <p><strong>We are glad you are here. Now, let's light it up!</strong></p>
+          
+          <div class="kringle">
+            <div class="kringle-header">🎅 Kringle's Korner</div>
+            <p>You are stepping into a leadership role that is equal parts operations and inspiration. Your energy, attitude, and attention to detail set the tone for everyone else. Lead with heart, stay organized, and carry the holiday spirit with you every night. This is your park now, so own it!</p>
+          </div>
+        </div>
+      </section>
+      
+      <!-- SECTION 1: Labor Management -->
+      <section class="section" id="s1">
+        <div class="section-header" onclick="toggleSection(this)">
+          <div class="section-number">1</div>
+          <h2 class="section-title">Labor Management</h2>
+          <span class="section-toggle">−</span>
+        </div>
+        <div class="section-content">
+          <p>Effective labor management is essential for controlling costs while maintaining a great guest experience. As GM, you must monitor staffing levels daily and adjust as needed to meet operational demands without exceeding budget.</p>
+          
+          <div class="subsection">
+            <h3>1.1 Scheduling</h3>
+            <ul>
+              <li>Ensure the schedule aligns with expected attendance and operational requirements</li>
+              <li>Use the <strong>Paycor system</strong> to post schedules in advance and communicate any changes to staff promptly</li>
+              <li>Limit overtime unless approved by the VPs</li>
+            </ul>
+          </div>
+          
+          <div class="subsection">
+            <h3>1.2 Labor Budget Awareness</h3>
+            <ul>
+              <li>Monitor daily and weekly labor costs to stay within budget</li>
+              <li>Review hours worked against scheduled hours to identify variances</li>
+              <li>Adjust staffing proactively if attendance trends differ from forecasts</li>
+            </ul>
+          </div>
+          
+          <div class="subsection">
+            <h3>1.3 Onsite Adjustments</h3>
+            <ul>
+              <li>If guest volume is <strong>lower</strong> than expected, consider releasing staff early</li>
+              <li>If volume is <strong>higher</strong> than expected, call in additional staff when possible</li>
+              <li>Ensure all adjustments maintain safe and efficient operations</li>
+            </ul>
+          </div>
+          
+          <div class="kringle">
+            <div class="kringle-header">🎅 Kringle's Korner</div>
+            <p>Your presence sets the rhythm for the entire park. Lead with positivity, communicate with clarity, and treat everyone with respect. When you also keep an eye on labor spending, you protect the resources that keep our holiday magic alive from opening night through the last car of the season.</p>
+          </div>
+        </div>
+      </section>
+      
+      <!-- SECTION 2: Guest Experience -->
+      <section class="section" id="s2">
+        <div class="section-header" onclick="toggleSection(this)">
+          <div class="section-number">2</div>
+          <h2 class="section-title">Guest Experience & Cultural Standards</h2>
+          <span class="section-toggle">−</span>
+        </div>
+        <div class="section-content">
+          <p>Guest experience is the heart of The Light Park. Every smile, wave, and twinkle of the lights is designed to create joy. But delivering that joy takes intention, leadership, and consistency. As GM, you're the champion of our guest experience culture.</p>
+          
+          <div class="subsection">
+            <h3>2.1 The Five Core Pillars</h3>
+            <p>Everything we do at The Light Park is grounded in these five guiding principles. They're not just a checklist—they're the heart of how we operate.</p>
+            
+            <div class="pillars">
+              <div class="pillar">
+                <div class="pillar-title"><span class="pillar-num">1</span> Safety First</div>
+                <p>The safety of our guests and team members comes before anything else. From how we manage vehicle flow to how we handle equipment, cleanliness, and communication, safety is the non-negotiable foundation of everything we do.</p>
+              </div>
+              <div class="pillar">
+                <div class="pillar-title"><span class="pillar-num">2</span> Warm Welcome</div>
+                <p>We greet every guest with joy and energy from the moment they enter our space. Eye contact, waves, smiles, and light conversation let our guests know they're valued and expected.</p>
+              </div>
+              <div class="pillar">
+                <div class="pillar-title"><span class="pillar-num">3</span> Create Moments of Magic</div>
+                <p>Surprise and delight guests with personal touches, festive energy, and light-hearted fun. Compliment festive sweaters or decorated cars, wave at children, or call out to "Santa" or "Rudolph" if you see costumes.</p>
+              </div>
+              <div class="pillar">
+                <div class="pillar-title"><span class="pillar-num">4</span> Fond Farewell</div>
+                <p>The last thing guests experience is just as important as the first. A friendly wave goodbye, a shout of "Merry Christmas!" or a final gesture of thanks leaves guests smiling all the way home.</p>
+              </div>
+              <div class="pillar">
+                <div class="pillar-title"><span class="pillar-num">5</span> Uplift the Energy</div>
+                <p>Your site should sparkle with holiday cheer from the attitude, enthusiasm, and warmth your team brings. Turn the tent and queue into the pre-show by getting your team to become part of the magic.</p>
+              </div>
+            </div>
+          </div>
+          
+          <div class="subsection">
+            <h3>2.2 Creating Moments of Magic</h3>
+            <p>At The Light Park, operations matter, but <strong>emotions matter more</strong>. These are the moments that make people roll down their windows, snap a photo, or tell their friends.</p>
+            
+            <h4>The Queue and Tent Are the Preshow</h4>
+            <p>Train your team to treat the tent and queue like a stage. Encourage them to notice:</p>
+            <ul>
+              <li>Matching family pajamas</li>
+              <li>Holiday sweaters or reindeer ears</li>
+              <li>Kids holding stuffed animals or toys</li>
+              <li>Cars decorated with garland or lights</li>
+            </ul>
+            <p><strong>Example comments:</strong></p>
+            <ul>
+              <li>"Wow! That's a Hallmark-level pajama game!"</li>
+              <li>"Rudolph, is that you? You look ready for the big night!"</li>
+              <li>"This car looks like it's on the Nice List!"</li>
+              <li>"Merry Christmas! I love the lights on your roof!"</li>
+            </ul>
+            
+            <h4>Meet DJ Polar Ice</h4>
+            <p>On select nights, we'll have <strong>DJ Polar Ice</strong> out in the queue area—a cross between a hype man and a holiday mascot. Their job is to energize the crowd, take photos (from a safe distance), and add a spark to the guest experience. Think Philly Phanatic, only with more tinsel!</p>
+          </div>
+          
+          <div class="subsection">
+            <h3>2.3 Guest Recovery Guidelines</h3>
+            <p>Even in the most magical environments, things occasionally go wrong. Guest recovery is the art of turning a potentially negative experience into a positive, memorable one.</p>
+            
+            <div class="checklist">
+              <div class="checklist-title">📋 Steps for Effective Guest Recovery</div>
+              <div class="checklist-item"><div class="check-box" onclick="toggleCheck(this)"></div><span><strong>1. Listen Actively</strong> — Allow the guest to share their concern without interruption</span></div>
+              <div class="checklist-item"><div class="check-box" onclick="toggleCheck(this)"></div><span><strong>2. Acknowledge the Issue</strong> — Validate the guest's feelings. Even if minor, it matters to them</span></div>
+              <div class="checklist-item"><div class="check-box" onclick="toggleCheck(this)"></div><span><strong>3. Apologize Sincerely</strong> — Offer a heartfelt apology regardless of who caused it</span></div>
+              <div class="checklist-item"><div class="check-box" onclick="toggleCheck(this)"></div><span><strong>4. Take Action Quickly</strong> — Resolve on the spot when possible</span></div>
+              <div class="checklist-item"><div class="check-box" onclick="toggleCheck(this)"></div><span><strong>5. Add a Touch of Magic</strong> — Go beyond fixing the problem (free cocoa voucher, personal escort, etc.)</span></div>
+            </div>
+            
+            <p><strong>Best Practices:</strong></p>
+            <ul>
+              <li>Stay calm and positive, even if the guest is upset</li>
+              <li>Never argue or assign blame in front of the guest</li>
+              <li>Empower your team to resolve minor issues without always seeking manager approval</li>
+              <li>Document significant incidents in your nightly report</li>
+            </ul>
+          </div>
+          
+          <div class="kringle">
+            <div class="kringle-header">🎅 Kringle's Korner</div>
+            <p>As Maya Angelou said, "People will forget what you said, people will forget what you did, but people will never forget how you made them feel." At The Light Park, every smile, every greeting, and every act of kindness is more than just a gesture—it's a memory in the making.</p>
+          </div>
+        </div>
+      </section>
+      
+      <!-- SECTION 3: Operations -->
+      <section class="section" id="s3">
+        <div class="section-header" onclick="toggleSection(this)">
+          <div class="section-number">3</div>
+          <h2 class="section-title">Operations & Site Management</h2>
+          <span class="section-toggle">−</span>
+        </div>
+        <div class="section-content">
+          <p>Running The Light Park is more than flipping a switch and watching the lights shine. As GM, you're the conductor of this holiday symphony—ensuring safety, efficiency, and guest delight while keeping the team energized.</p>
+          
+          <div class="subsection">
+            <h3>3.1 General Manager Responsibilities</h3>
+            <p>You are accountable for ensuring all staff understand their roles, follow procedures, and work together. This includes managing staffing levels, addressing operational challenges, and maintaining a visible presence on site throughout the evening.</p>
+          </div>
+          
+          <div class="subsection">
+            <h3>3.2 Staffing and Scheduling</h3>
+            <p>Ensure your site is adequately staffed for expected attendance each night. Monitor attendance patterns and communicate with the VP of Operations if adjustments are needed. Confirm all staff are aware of their assigned positions before opening.</p>
+          </div>
+          
+          <div class="subsection">
+            <h3>3.3 Site Readiness</h3>
+            <p>Before opening each night, conduct a full site inspection:</p>
+            <ul>
+              <li>Verify all lighting elements are operational</li>
+              <li>Props and displays are correctly positioned</li>
+              <li>All guest areas are clean and free of hazards</li>
+              <li>Signage is in place and clearly visible</li>
+            </ul>
+          </div>
+          
+          <div class="subsection">
+            <h3>3.4 Traffic Flow and Parking</h3>
+            <p>Work with your team to maintain smooth vehicle flow into, through, and out of the park. Ensure entry and exit points are staffed and queue lines are clearly marked. Address any bottlenecks quickly.</p>
+          </div>
+          
+          <div class="subsection">
+            <h3>3.5 Safety and Security</h3>
+            <p>Safety is the top priority. Confirm all team members are trained in emergency procedures. Maintain regular communication with security staff and immediately address any safety hazards. <strong>All incidents, no matter how minor, should be documented.</strong></p>
+          </div>
+          
+          <div class="subsection">
+            <h3>3.7 Nightly GM Closeout Checklist</h3>
+            <div class="checklist">
+              <div class="checklist-title">📋 Operations & Safety</div>
+              <div class="checklist-item"><div class="check-box" onclick="toggleCheck(this)"></div><span>All attractions, effects, and systems safely shut down</span></div>
+              <div class="checklist-item"><div class="check-box" onclick="toggleCheck(this)"></div><span>All perimeter gates, entry points, and access routes secure</span></div>
+              <div class="checklist-item"><div class="check-box" onclick="toggleCheck(this)"></div><span>Walk the site — no guests or staff remain in operational areas</span></div>
+            </div>
+            <div class="checklist">
+              <div class="checklist-title">📋 Equipment & Systems</div>
+              <div class="checklist-item"><div class="check-box" onclick="toggleCheck(this)"></div><span>Power down all non-essential equipment</span></div>
+              <div class="checklist-item"><div class="check-box" onclick="toggleCheck(this)"></div><span>Radios, tablets on charge and stored securely</span></div>
+              <div class="checklist-item"><div class="check-box" onclick="toggleCheck(this)"></div><span>Rental/borrowed equipment returned to proper location</span></div>
+            </div>
+            <div class="checklist">
+              <div class="checklist-title">📋 Staff & Payroll</div>
+              <div class="checklist-item"><div class="check-box" onclick="toggleCheck(this)"></div><span>All staff have clocked out</span></div>
+              <div class="checklist-item"><div class="check-box" onclick="toggleCheck(this)"></div><span>Discrepancies or incidents noted in nightly report</span></div>
+              <div class="checklist-item"><div class="check-box" onclick="toggleCheck(this)"></div><span>Follow-up actions communicated for next shift</span></div>
+            </div>
+            <div class="checklist">
+              <div class="checklist-title">📋 Reporting</div>
+              <div class="checklist-item"><div class="check-box" onclick="toggleCheck(this)"></div><span>Nightly report completed with all data points</span></div>
+              <div class="checklist-item"><div class="check-box" onclick="toggleCheck(this)"></div><span>Downtime logs, incident reports uploaded/filed</span></div>
+              <div class="checklist-item"><div class="check-box" onclick="toggleCheck(this)"></div><span>Report emailed to VPs within 30 min of close</span></div>
+            </div>
+          </div>
+          
+          <div class="kringle">
+            <div class="kringle-header">🎅 Kringle's Korner</div>
+            <p>Smooth site operations depend on proactive leadership. Be present, visible, and approachable. Anticipate potential challenges and address them before they escalate. Your calm and confident leadership ensures that both staff and guests enjoy the experience.</p>
+          </div>
+        </div>
+      </section>
+      
+      <!-- SECTION 4: Park Opening -->
+      <section class="section" id="s4">
+        <div class="section-header" onclick="toggleSection(this)">
+          <div class="section-number">4</div>
+          <h2 class="section-title">Park Opening Procedures</h2>
+          <span class="section-toggle">−</span>
+        </div>
+        <div class="section-content">
+          <p>The start of the night is your first big opportunity to set the tone, pace, and energy for both your team and your guests.</p>
+          
+          <div class="subsection">
+            <h3>4.1 Arrival and Check-in</h3>
+            <ul>
+              <li>Arrive early enough to complete all pre-opening tasks without rushing</li>
+              <li>Check in with site security or designated lead upon arrival</li>
+              <li>Verify all key personnel are present and accounted for</li>
+              <li>Confirm all safety equipment and radios are distributed and functioning</li>
+            </ul>
+          </div>
+          
+          <div class="subsection">
+            <h3>4.2 Daily Prep Checklist</h3>
+            <div class="checklist">
+              <div class="checklist-title">📋 Before Opening</div>
+              <div class="checklist-item"><div class="check-box" onclick="toggleCheck(this)"></div><span>Walk the site to inspect for hazards, debris, or maintenance issues</span></div>
+              <div class="checklist-item"><div class="check-box" onclick="toggleCheck(this)"></div><span>Verify all lighting and audio systems are functioning</span></div>
+              <div class="checklist-item"><div class="check-box" onclick="toggleCheck(this)"></div><span>Check all digital and pre-printed signage is correctly placed</span></div>
+              <div class="checklist-item"><div class="check-box" onclick="toggleCheck(this)"></div><span>Ensure inventory for concessions, merchandise, and operational supplies is stocked</span></div>
+              <div class="checklist-item"><div class="check-box" onclick="toggleCheck(this)"></div><span>Test ticket scanning equipment is synced and ready</span></div>
+            </div>
+          </div>
+          
+          <div class="subsection">
+            <h3>4.3 Lighting and Audio</h3>
+            <ul>
+              <li>Coordinate with tech to confirm all displays, projectors, and special effects are operating</li>
+              <li>Confirm background music is playing at the correct volume and in the correct zones</li>
+              <li>Address any technical issues immediately with the tech</li>
+            </ul>
+          </div>
+          
+          <div class="subsection">
+            <h3>4.4 Uniform Standards</h3>
+            <ul>
+              <li>Inspect staff uniforms for cleanliness and adherence to guidelines</li>
+              <li>Uniforms must look the same on the first day and every day until the end of the season</li>
+              <li>Correct any uniform issues respectfully and promptly</li>
+            </ul>
+          </div>
+          
+          <div class="kringle">
+            <div class="kringle-header">🎅 Kringle's Korner</div>
+            <p>The best nights begin with careful preparation. Your walkthroughs, checks, and leadership presence create the foundation for everything that follows. Guests may never see this work, but they will absolutely feel its impact.</p>
+          </div>
+        </div>
+      </section>
+      
+      <!-- Continue with remaining sections... -->
+      <section class="section collapsed" id="s5">
+        <div class="section-header" onclick="toggleSection(this)">
+          <div class="section-number">5</div>
+          <h2 class="section-title">Staff Scheduling & Breaks</h2>
+          <span class="section-toggle">+</span>
+        </div>
+        <div class="section-content">
+          <p>Running a smooth show night after night means having the right people in the right place at the right time.</p>
+          <ul>
+            <li>Post the weekly schedule at least <strong>5 days in advance</strong> using Paycor</li>
+            <li>Build in backup coverage for peak times or callouts</li>
+            <li>Stagger breaks to maintain coverage and guest service quality</li>
+            <li>Employees are responsible for finding coverage via Shift Swap in Paycor app</li>
+          </ul>
+          <div class="kringle">
+            <div class="kringle-header">🎅 Kringle's Korner</div>
+            <p>Nothing affects morale faster than chaotic scheduling. When your team knows their shifts well in advance, feels their time is respected, and sees you actively managing coverage, they can focus on bringing their best energy to guests.</p>
+          </div>
+        </div>
+      </section>
+      
+      <section class="section collapsed" id="s6">
+        <div class="section-header" onclick="toggleSection(this)">
+          <div class="section-number">6</div>
+          <h2 class="section-title">Daily Operations</h2>
+          <span class="section-toggle">+</span>
+        </div>
+        <div class="section-content">
+          <h3>6.2 Pre-Shift Meeting</h3>
+          <p>Your moment to inspire and align the team before opening:</p>
+          <ul>
+            <li>Gather the team in a circle and give a quick rundown of the night ahead</li>
+            <li>Share any updates, staffing changes, or special promotions</li>
+            <li>Remind the team about guest experience priorities</li>
+            <li>Use the moment to energize: shoutouts, kudos, and theme nights</li>
+            <li>Issue a fun challenge (e.g., who speaks to the guest who traveled the farthest)</li>
+            <li><strong>End with a cheer:</strong> "All hands in—on three we shout The Light Park!"</li>
+          </ul>
+        </div>
+      </section>
+      
+      <section class="section collapsed" id="s7">
+        <div class="section-header" onclick="toggleSection(this)">
+          <div class="section-number">7</div>
+          <h2 class="section-title">Guest Arrival & Parking</h2>
+          <span class="section-toggle">+</span>
+        </div>
+        <div class="section-content">
+          <p>The arrival experience sets the tone for a guest's entire visit.</p>
+          <ul>
+            <li>Position greeters at key points to wave, smile, and welcome guests</li>
+            <li>Scan tickets quickly and efficiently, resolving issues with care</li>
+            <li>Offer guests the opportunity to purchase items on-site (<strong>upsell!</strong>)</li>
+            <li>Keep communication open between parking staff and entry staff via radio</li>
+            <li>Add additional staff to high-traffic areas during peak times</li>
+          </ul>
+          <div class="kringle">
+            <div class="kringle-header">🎅 Kringle's Korner</div>
+            <p>The first impression begins long before guests see the lights. A smooth, cheerful arrival process sets the stage for everything that follows.</p>
+          </div>
+        </div>
+      </section>
+      
+      <section class="section collapsed" id="s8">
+        <div class="section-header" onclick="toggleSection(this)">
+          <div class="section-number">8</div>
+          <h2 class="section-title">Nightly Shutdown Procedures</h2>
+          <span class="section-toggle">+</span>
+        </div>
+        <div class="section-content">
+          <h3>8.1 Debrief and Review</h3>
+          <ul>
+            <li>Gather the team for a quick end-of-night huddle</li>
+            <li>Recognize outstanding efforts and share positive guest feedback</li>
+            <li>Briefly review challenges and how they were handled</li>
+            <li>Encourage staff to share observations that could improve operations</li>
+            <li>Ensure the staff and GM secure and lock up the tent</li>
+          </ul>
+          <h3>8.4.1 Contacting the VP Team</h3>
+          <p>Contact the VP team if there is a major incident, safety issue, or urgent operational problem that cannot be resolved on-site.</p>
+        </div>
+      </section>
+      
+      <section class="section collapsed" id="s9">
+        <div class="section-header" onclick="toggleSection(this)">
+          <div class="section-number">9</div>
+          <h2 class="section-title">HR & Staff Management</h2>
+          <span class="section-toggle">+</span>
+        </div>
+        <div class="section-content">
+          <p>A happy, well-trained, and engaged team creates better guest experiences.</p>
+          <h3>Hiring and Onboarding</h3>
+          <ul>
+            <li>Conduct interviews focusing on attitude, enthusiasm, and cultural alignment</li>
+            <li>Look for candidates who are <strong>outgoing, naturally friendly, and genuine people persons</strong></li>
+            <li>Employees may not work any hours until all Paycor forms are completed and approved</li>
+            <li>Assign returning team members as onboarding buddies</li>
+          </ul>
+          <h3>Staff Performance</h3>
+          <ul>
+            <li><strong>Praise in public, correct in private</strong></li>
+            <li>Provide real-time feedback, both positive and corrective</li>
+            <li>Document performance notes in the HR app log</li>
+          </ul>
+          <div class="kringle">
+            <div class="kringle-header">🎅 Kringle's Korner</div>
+            <p>A motivated, respected, and well-trained staff is the heart of a great guest experience. When you invest in your team's success and well-being, they will reflect that energy back to every guest.</p>
+          </div>
+        </div>
+      </section>
+      
+      <section class="section collapsed" id="s10">
+        <div class="section-header" onclick="toggleSection(this)">
+          <div class="section-number">10</div>
+          <h2 class="section-title">Inventory Management</h2>
+          <span class="section-toggle">+</span>
+        </div>
+        <div class="section-content">
+          <ul>
+            <li>Keep an up-to-date inventory log for all items</li>
+            <li>Verify inventory counts weekly and adjust based on usage</li>
+            <li>Place orders early enough to allow for delivery before stock runs out</li>
+            <li>Inspect all incoming deliveries for accuracy and quality before signing off</li>
+            <li>Lock storage rooms and merchandise displays when not in use</li>
+          </ul>
+        </div>
+      </section>
+      
+      <section class="section collapsed" id="s11">
+        <div class="section-header" onclick="toggleSection(this)">
+          <div class="section-number">11</div>
+          <h2 class="section-title">Cash Handling & Revenue</h2>
+          <span class="section-toggle">+</span>
+        </div>
+        <div class="section-content">
+          <ul>
+            <li>Only trained and authorized staff may handle cash</li>
+            <li>Maintain a secure fanny pack for each staff member handling transactions</li>
+            <li>Count and verify all starting cash amounts before opening</li>
+            <li>Use the POS system to record <strong>every transaction without exception</strong></li>
+            <li>Perform scheduled cash drops to the safe during high-traffic periods</li>
+            <li>Double-count cash and have a second person verify deposits</li>
+          </ul>
+          <div class="kringle">
+            <div class="kringle-header">🎅 Kringle's Korner</div>
+            <p>When cash is handled with precision and care, it builds trust from the corporate office down to the front-line staff. Accurate revenue management is the backbone of a financially healthy park.</p>
+          </div>
+        </div>
+      </section>
+      
+      <section class="section collapsed" id="s12">
+        <div class="section-header" onclick="toggleSection(this)">
+          <div class="section-number">12</div>
+          <h2 class="section-title">Guest Feedback & Improvement</h2>
+          <span class="section-toggle">+</span>
+        </div>
+        <div class="section-content">
+          <p>Guest feedback is one of the most valuable tools we have for making The Light Park experience better each night.</p>
+          <ul>
+            <li>Encourage guests to share experiences through surveys, comment cards, and online reviews</li>
+            <li>Monitor social media mentions and online ratings for trends</li>
+            <li>If a guest had a negative experience, turn it around before they leave</li>
+            <li>Review survey results weekly to identify patterns</li>
+            <li>If feedback might apply to many Parks, report it to the VPs</li>
+          </ul>
+        </div>
+      </section>
+      
+      <section class="section collapsed" id="s13">
+        <div class="section-header" onclick="toggleSection(this)">
+          <div class="section-number">13</div>
+          <h2 class="section-title">Emergency & Safety Protocols</h2>
+          <span class="section-toggle">+</span>
+        </div>
+        <div class="section-content">
+          <h3>13.1 Emergency Communications Hierarchy</h3>
+          <h4>🚨 Life-Threatening Emergencies (Medical, Fire, Severe Weather, Active Threat)</h4>
+          <ol>
+            <li><strong>Call 911 immediately</strong></li>
+            <li>Once emergency services are en route, notify: The VPs → Security → Key managers</li>
+          </ol>
+          
+          <h4>⚠️ Serious Operational Disruptions (Power Outage, Major Downtime)</h4>
+          <ol>
+            <li>Notify the VPs immediately</li>
+            <li>Contact the onsite technician</li>
+            <li>Inform shift leads of impact and provide direction</li>
+          </ol>
+          
+          <h3>13.5 Severe Weather</h3>
+          <ul>
+            <li>Use the <strong>MyRadar app</strong> to monitor weather conditions</li>
+            <li>If lightning gets within <strong>8 miles</strong>, temporarily close</li>
+            <li>Contact VPs if weather may be extreme</li>
+          </ul>
+          
+          <h3>13.9 Downtime Categories</h3>
+          <ol>
+            <li><strong>Weather Delay</strong> — lightning, heavy rain, ice</li>
+            <li><strong>Technical/Equipment Failure</strong> — lights, sound, power</li>
+            <li><strong>Traffic Flow Disruption</strong> — blockage, accident, slowdown</li>
+            <li><strong>Staffing Shortage</strong> — insufficient staff</li>
+            <li><strong>Medical Emergency</strong> — guest or staff situation</li>
+            <li><strong>External Factors</strong> — city traffic, nearby events</li>
+            <li><strong>Other</strong> — provide details</li>
+          </ol>
+          <div class="kringle">
+            <div class="kringle-header">🎅 Kringle's Korner</div>
+            <p>Downtime is part of the game—how you respond is what sets us apart. By logging each event with care and accuracy, you help the entire team learn, improve, and keep the magic alive.</p>
+          </div>
+        </div>
+      </section>
+      
+      <section class="section collapsed" id="s14">
+        <div class="section-header" onclick="toggleSection(this)">
+          <div class="section-number">14</div>
+          <h2 class="section-title">Lost & Found</h2>
+          <span class="section-toggle">+</span>
+        </div>
+        <div class="section-content">
+          <ul>
+            <li>Record each item in the Lost and Found Log with date, time, location, and finder's name</li>
+            <li>When a guest inquires, ask for a detailed description to verify ownership</li>
+            <li>Perishable items should be discarded at end of night</li>
+            <li>High-value items (phones, wallets, jewelry) should be stored in a secure, locked location</li>
+            <li>If unclaimed after two weeks, notify VPs for instructions</li>
+          </ul>
+        </div>
+      </section>
+      
+      <section class="section collapsed" id="s15">
+        <div class="section-header" onclick="toggleSection(this)">
+          <div class="section-number">15</div>
+          <h2 class="section-title">Vehicle & Traffic Management</h2>
+          <span class="section-toggle">+</span>
+        </div>
+        <div class="section-content">
+          <ul>
+            <li>Confirm all cones, barricades, and signage are in place before opening</li>
+            <li>Use radios to communicate with staff at various points to adjust speed/spacing</li>
+            <li>Remind staff to stay visible and wear <strong>reflective vests</strong> at all times</li>
+            <li>Never allow guests to exit vehicles while on the route unless directed for safety</li>
+            <li>Communicate with local law enforcement if backups extend onto public roads</li>
+          </ul>
+        </div>
+      </section>
+      
+      <section class="section collapsed" id="s16">
+        <div class="section-header" onclick="toggleSection(this)">
+          <div class="section-number">16</div>
+          <h2 class="section-title">Maintenance & Repairs</h2>
+          <span class="section-toggle">+</span>
+        </div>
+        <div class="section-content">
+          <ul>
+            <li>Conduct a walk-through before opening each shift</li>
+            <li>Inspect light displays, inflatables, signage, and decorative elements for damage</li>
+            <li>If a repair is critical to guest safety, pause operations in that area</li>
+            <li>Document all repairs needed using the Maintenance Request Form</li>
+            <li>Schedule vendor visits during non-operating hours whenever possible</li>
+          </ul>
+          <div class="kringle">
+            <div class="kringle-header">🎅 Kringle's Korner</div>
+            <p>A well-maintained park is like a perfectly wrapped present: it makes the experience shine from the moment guests arrive.</p>
+          </div>
+        </div>
+      </section>
+      
+      <section class="section collapsed" id="s17">
+        <div class="section-header" onclick="toggleSection(this)">
+          <div class="section-number">17</div>
+          <h2 class="section-title">End of Season Activities</h2>
+          <span class="section-toggle">+</span>
+        </div>
+        <div class="section-content">
+          <h3>Final Week</h3>
+          <ul>
+            <li>Remind staff about end-of-season expectations including return of uniforms</li>
+            <li>Begin reducing inventory orders to avoid excess stock</li>
+          </ul>
+          <h3>Final Night</h3>
+          <ul>
+            <li>Keep guest experience standards high right up to the last guest</li>
+            <li>Thank each staff member personally for their contributions</li>
+            <li>Collect uniforms, radios, and other issued equipment before staff leave</li>
+          </ul>
+          <h3>Post-Season</h3>
+          <ul>
+            <li>Complete a full inventory of all equipment, supplies, and merchandise</li>
+            <li>Remove all seasonal decorations, props, and temporary structures</li>
+            <li>Summarize the season's successes, challenges, and lessons learned</li>
+            <li>Provide clear recommendations for enhancing operations next year</li>
+            <li>Arrange a small end-of-season team gathering to celebrate accomplishments</li>
+          </ul>
+          <div class="kringle">
+            <div class="kringle-header">🎅 Kringle's Korner</div>
+            <p>Ending the season well is just as important as starting strong. A gracious goodbye and a well-managed close-down set the stage for an even brighter season ahead.</p>
+          </div>
+        </div>
+      </section>
+      
+      <!-- APPENDIX -->
+      <section class="section collapsed" id="appendix">
+        <div class="section-header" onclick="toggleSection(this)">
+          <div class="section-number">📎</div>
+          <h2 class="section-title">Appendix: Reference Links</h2>
+          <span class="section-toggle">+</span>
+        </div>
+        <div class="section-content">
+          <ul>
+            <li><strong>A1.</strong> Incident Report Form (Safety/Incident)</li>
+            <li><strong>A2.</strong> Paycor Scheduling Instructions (Staffing)</li>
+            <li><strong>A3.</strong> New Employee Enrollment Page (Paycor HR System)</li>
+            <li><strong>A4.</strong> Radio Codes Cheat Sheet (Communications)</li>
+            <li><strong>A5.</strong> Nightly Report (Operations)</li>
+            <li><strong>A6.</strong> Inventory Log (Operations)</li>
+            <li><strong>A7.</strong> MyRadar Weather App Download Page</li>
+            <li><strong>A8.</strong> High Winds Safety Protocol</li>
+            <li><strong>A9.</strong> Lightning Safety Protocol</li>
+          </ul>
+          <div class="kringle">
+            <div class="kringle-header">🎅 Kringle's Korner</div>
+            <p>By keeping all reference materials together, you'll always have the right tool within reach. Update this appendix whenever new resources are added!</p>
+          </div>
+        </div>
+      </section>
+      
+    </main>
+  </div>
+  
+  <script>
+    // Toggle section collapse
+    function toggleSection(header) {
+      const section = header.closest('.section');
+      section.classList.toggle('collapsed');
+      const toggle = header.querySelector('.section-toggle');
+      toggle.textContent = section.classList.contains('collapsed') ? '+' : '−';
+    }
+    
+    // Toggle checkbox
+    function toggleCheck(el) {
+      el.classList.toggle('checked');
+      el.textContent = el.classList.contains('checked') ? '✓' : '';
+    }
+    
+    // Toggle mobile sidebar
+    function toggleSidebar() {
+      document.getElementById('sidebar').classList.toggle('open');
+    }
+    
+    // Highlight active TOC item on scroll
+    const sections = document.querySelectorAll('.section');
+    const tocItems = document.querySelectorAll('.toc-item');
+    
+    window.addEventListener('scroll', () => {
+      let current = '';
+      sections.forEach(section => {
+        const sectionTop = section.offsetTop;
+        if (scrollY >= sectionTop - 100) {
+          current = section.getAttribute('id');
+        }
+      });
+      
+      tocItems.forEach(item => {
+        item.classList.remove('active');
+        if (item.querySelector(`a[href="#${current}"]`)) {
+          item.classList.add('active');
+        }
+      });
+    });
+    
+    // Search functionality
+    function searchManual(query) {
+      query = query.toLowerCase();
+      sections.forEach(section => {
+        const text = section.textContent.toLowerCase();
+        if (query === '' || text.includes(query)) {
+          section.style.display = 'block';
+          if (query && text.includes(query)) {
+            section.classList.remove('collapsed');
+            section.querySelector('.section-toggle').textContent = '−';
+          }
+        } else {
+          section.style.display = 'none';
+        }
+      });
+    }
+    
+    // Close sidebar when clicking a link on mobile
+    document.querySelectorAll('.toc-link').forEach(link => {
+      link.addEventListener('click', () => {
+        if (window.innerWidth <= 900) {
+          document.getElementById('sidebar').classList.remove('open');
+        }
+      });
+    });
+  </script>
+</body>
+</html>
