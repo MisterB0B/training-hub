@@ -1,0 +1,430 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Training Hub | The Light Park</title>
+  <style>
+    :root {
+      --bg: #0B0D14;
+      --surface: #12151F;
+      --surface2: #1a1e2e;
+      --border: #2a2f42;
+      --text: #f0f0f5;
+      --text-dim: #8888a0;
+      --purple: #a855f7;
+      --teal: #06d6a0;
+      --pink: #ff4fd8;
+      --green: #22c55e;
+      --orange: #f97316;
+      --blue: #3b82f6;
+    }
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      min-height: 100vh;
+    }
+    
+    .header {
+      background: linear-gradient(135deg, var(--purple), var(--blue));
+      padding: 24px 20px;
+      text-align: center;
+    }
+    .header h1 { font-size: 28px; font-weight: 800; margin-bottom: 8px; }
+    .header p { opacity: 0.9; }
+    
+    .container { max-width: 1000px; margin: 0 auto; padding: 20px; }
+    
+    .search-bar {
+      display: flex;
+      gap: 12px;
+      margin-bottom: 24px;
+    }
+    .search-bar input {
+      flex: 1;
+      padding: 14px 20px;
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      color: var(--text);
+      font-size: 16px;
+    }
+    .search-bar select {
+      padding: 14px 20px;
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      color: var(--text);
+    }
+    
+    .categories {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+      gap: 16px;
+      margin-bottom: 32px;
+    }
+    .category-card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      padding: 24px;
+      text-align: center;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+    .category-card:hover {
+      border-color: var(--purple);
+      transform: translateY(-2px);
+    }
+    .category-icon { font-size: 40px; margin-bottom: 12px; }
+    .category-name { font-weight: 700; font-size: 16px; margin-bottom: 4px; }
+    .category-count { font-size: 13px; color: var(--text-dim); }
+    
+    .section { margin-bottom: 32px; }
+    .section-title {
+      font-size: 20px;
+      font-weight: 700;
+      margin-bottom: 16px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+    
+    .training-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+      gap: 16px;
+    }
+    .training-card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      overflow: hidden;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+    .training-card:hover {
+      border-color: var(--purple);
+    }
+    .training-thumb {
+      height: 140px;
+      background: var(--surface2);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 48px;
+    }
+    .training-body { padding: 16px; }
+    .training-title { font-weight: 700; font-size: 15px; margin-bottom: 6px; }
+    .training-desc { font-size: 13px; color: var(--text-dim); margin-bottom: 12px; }
+    .training-meta { display: flex; gap: 12px; font-size: 12px; }
+    .meta-item {
+      display: flex;
+      align-items: center;
+      gap: 4px;
+      color: var(--text-dim);
+    }
+    .badge {
+      padding: 4px 10px;
+      border-radius: 6px;
+      font-size: 11px;
+      font-weight: 600;
+    }
+    .badge-required { background: var(--purple); color: white; }
+    .badge-new { background: var(--green); color: white; }
+    .badge-video { background: var(--blue); color: white; }
+    .badge-doc { background: var(--orange); color: white; }
+    
+    .progress-bar {
+      height: 4px;
+      background: var(--border);
+      border-radius: 2px;
+      margin-top: 12px;
+      overflow: hidden;
+    }
+    .progress-fill {
+      height: 100%;
+      background: var(--green);
+    }
+    
+    .checklist {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 20px;
+    }
+    .checklist-item {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      padding: 12px 0;
+      border-bottom: 1px solid var(--border);
+    }
+    .checklist-item:last-child { border-bottom: none; }
+    .checklist-check {
+      width: 24px;
+      height: 24px;
+      border: 2px solid var(--border);
+      border-radius: 6px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+    }
+    .checklist-check.done {
+      background: var(--green);
+      border-color: var(--green);
+      color: white;
+    }
+    .checklist-text { flex: 1; }
+    .checklist-text.done { text-decoration: line-through; color: var(--text-dim); }
+    
+    @media (max-width: 600px) {
+      .categories { grid-template-columns: repeat(2, 1fr); }
+      .training-grid { grid-template-columns: 1fr; }
+    }
+  </style>
+</head>
+<body>
+  <div class="header">
+    <h1>📚 Training Hub</h1>
+    <p>Everything you need to know to do your job well</p>
+  </div>
+  
+  <div class="container">
+    <div class="search-bar">
+      <input type="text" placeholder="Search training materials..." id="searchInput">
+      <select id="roleFilter">
+        <option value="">All Roles</option>
+        <option value="tent">Tent Staff</option>
+        <option value="gate">Gate/Parking</option>
+        <option value="tech">Show Tech</option>
+        <option value="mascot">Mascot</option>
+        <option value="manager">Manager</option>
+      </select>
+    </div>
+    
+    <div class="categories">
+      <div class="category-card" onclick="filterCategory('onboarding')">
+        <div class="category-icon">🎓</div>
+        <div class="category-name">New Hire Onboarding</div>
+        <div class="category-count">8 modules</div>
+      </div>
+      <div class="category-card" onclick="filterCategory('tent')">
+        <div class="category-icon">🎪</div>
+        <div class="category-name">Tent Operations</div>
+        <div class="category-count">12 guides</div>
+      </div>
+      <div class="category-card" onclick="filterCategory('tech')">
+        <div class="category-icon">⚡</div>
+        <div class="category-name">Tech & Troubleshooting</div>
+        <div class="category-count">15 guides</div>
+      </div>
+      <div class="category-card" onclick="filterCategory('safety')">
+        <div class="category-icon">🦺</div>
+        <div class="category-name">Safety & Emergency</div>
+        <div class="category-count">6 protocols</div>
+      </div>
+      <div class="category-card" onclick="filterCategory('guest')">
+        <div class="category-icon">💬</div>
+        <div class="category-name">Guest Service</div>
+        <div class="category-count">9 guides</div>
+      </div>
+      <div class="category-card" onclick="filterCategory('manager')">
+        <div class="category-icon">👔</div>
+        <div class="category-name">Manager Resources</div>
+        <div class="category-count">11 docs</div>
+      </div>
+    </div>
+    
+    <div class="section">
+      <div class="section-title">🎓 Your Onboarding Progress</div>
+      <div class="checklist">
+        <div class="checklist-item">
+          <div class="checklist-check done" onclick="toggleCheck(this)">✓</div>
+          <span class="checklist-text done">Watch: Welcome to The Light Park (5 min)</span>
+          <span class="badge badge-video">Video</span>
+        </div>
+        <div class="checklist-item">
+          <div class="checklist-check done" onclick="toggleCheck(this)">✓</div>
+          <span class="checklist-text done">Read: Employee Handbook</span>
+          <span class="badge badge-doc">Doc</span>
+        </div>
+        <div class="checklist-item">
+          <div class="checklist-check done" onclick="toggleCheck(this)">✓</div>
+          <span class="checklist-text done">Complete: Safety Quiz (Score: 95%)</span>
+          <span class="badge badge-required">Required</span>
+        </div>
+        <div class="checklist-item">
+          <div class="checklist-check" onclick="toggleCheck(this)"></div>
+          <span class="checklist-text">Watch: Your Role - Tent Staff</span>
+          <span class="badge badge-video">Video</span>
+        </div>
+        <div class="checklist-item">
+          <div class="checklist-check" onclick="toggleCheck(this)"></div>
+          <span class="checklist-text">Read: POS System Guide</span>
+          <span class="badge badge-doc">Doc</span>
+        </div>
+        <div class="checklist-item">
+          <div class="checklist-check" onclick="toggleCheck(this)"></div>
+          <span class="checklist-text">Shadow shift with experienced staff</span>
+          <span class="badge badge-required">Required</span>
+        </div>
+        <div class="progress-bar"><div class="progress-fill" style="width: 50%;"></div></div>
+        <div style="text-align: right; margin-top: 8px; font-size: 13px; color: var(--text-dim);">3 of 6 complete</div>
+      </div>
+    </div>
+    
+    <div class="section">
+      <div class="section-title">📹 Training Videos</div>
+      <div class="training-grid">
+        <div class="training-card">
+          <div class="training-thumb">🎬</div>
+          <div class="training-body">
+            <div class="training-title">Welcome to The Light Park</div>
+            <div class="training-desc">Overview of our mission, values, and what makes us special.</div>
+            <div class="training-meta">
+              <span class="meta-item">⏱️ 5 min</span>
+              <span class="badge badge-required">Required</span>
+            </div>
+          </div>
+        </div>
+        <div class="training-card">
+          <div class="training-thumb">🎪</div>
+          <div class="training-body">
+            <div class="training-title">Tent Operations 101</div>
+            <div class="training-desc">Setup, sales, inventory, closing procedures.</div>
+            <div class="training-meta">
+              <span class="meta-item">⏱️ 12 min</span>
+              <span class="badge badge-video">Video</span>
+            </div>
+          </div>
+        </div>
+        <div class="training-card">
+          <div class="training-thumb">💳</div>
+          <div class="training-body">
+            <div class="training-title">POS System Training</div>
+            <div class="training-desc">How to process sales, refunds, and handle cash.</div>
+            <div class="training-meta">
+              <span class="meta-item">⏱️ 8 min</span>
+              <span class="badge badge-required">Required</span>
+            </div>
+          </div>
+        </div>
+        <div class="training-card">
+          <div class="training-thumb">⚡</div>
+          <div class="training-body">
+            <div class="training-title">FPP Controller Basics</div>
+            <div class="training-desc">What to do when a prop goes down.</div>
+            <div class="training-meta">
+              <span class="meta-item">⏱️ 15 min</span>
+              <span class="badge badge-new">New</span>
+            </div>
+          </div>
+        </div>
+        <div class="training-card">
+          <div class="training-thumb">🦺</div>
+          <div class="training-body">
+            <div class="training-title">Emergency Procedures</div>
+            <div class="training-desc">Fire, weather, medical, security protocols.</div>
+            <div class="training-meta">
+              <span class="meta-item">⏱️ 10 min</span>
+              <span class="badge badge-required">Required</span>
+            </div>
+          </div>
+        </div>
+        <div class="training-card">
+          <div class="training-thumb">😊</div>
+          <div class="training-body">
+            <div class="training-title">Guest Service Excellence</div>
+            <div class="training-desc">Creating magical moments for every family.</div>
+            <div class="training-meta">
+              <span class="meta-item">⏱️ 7 min</span>
+              <span class="badge badge-video">Video</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    
+    <div class="section">
+      <div class="section-title">📖 Quick Reference Guides</div>
+      <div class="training-grid">
+        <div class="training-card">
+          <div class="training-thumb" style="font-size:36px;">📋</div>
+          <div class="training-body">
+            <div class="training-title">Tent Closing Checklist</div>
+            <div class="training-desc">Step-by-step end-of-night procedures.</div>
+            <div class="training-meta">
+              <span class="meta-item">📄 1 page</span>
+              <span class="badge badge-doc">Doc</span>
+            </div>
+          </div>
+        </div>
+        <div class="training-card">
+          <div class="training-thumb" style="font-size:36px;">🔧</div>
+          <div class="training-body">
+            <div class="training-title">Common Prop Issues</div>
+            <div class="training-desc">Troubleshooting guide for field techs.</div>
+            <div class="training-meta">
+              <span class="meta-item">📄 4 pages</span>
+              <span class="badge badge-doc">Doc</span>
+            </div>
+          </div>
+        </div>
+        <div class="training-card">
+          <div class="training-thumb" style="font-size:36px;">💰</div>
+          <div class="training-body">
+            <div class="training-title">Upselling Cheat Sheet</div>
+            <div class="training-desc">Best phrases and timing for Blitzen Bundles.</div>
+            <div class="training-meta">
+              <span class="meta-item">📄 1 page</span>
+              <span class="badge badge-new">New</span>
+            </div>
+          </div>
+        </div>
+        <div class="training-card">
+          <div class="training-thumb" style="font-size:36px;">🚨</div>
+          <div class="training-body">
+            <div class="training-title">Emergency Contact Card</div>
+            <div class="training-desc">Who to call for different situations.</div>
+            <div class="training-meta">
+              <span class="meta-item">📄 1 page</span>
+              <span class="badge badge-required">Required</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  
+  <script>
+    function toggleCheck(el) {
+      el.classList.toggle('done');
+      const text = el.nextElementSibling;
+      text.classList.toggle('done');
+      if (el.classList.contains('done')) {
+        el.textContent = '✓';
+      } else {
+        el.textContent = '';
+      }
+      updateProgress();
+    }
+    
+    function updateProgress() {
+      const checks = document.querySelectorAll('.checklist-check');
+      const done = document.querySelectorAll('.checklist-check.done').length;
+      const total = checks.length;
+      const pct = (done / total) * 100;
+      document.querySelector('.progress-fill').style.width = pct + '%';
+      document.querySelector('.checklist').querySelector('div:last-child').textContent = `${done} of ${total} complete`;
+    }
+    
+    function filterCategory(cat) {
+      alert(`Filtering by: ${cat}\n\nThis would show only training materials for that category.`);
+    }
+  </script>
+</body>
+</html>
