@@ -3,7 +3,9 @@
 <head><script>const TLP_SUPABASE_URL='https://gwjtfcrgpxclixonogpe.supabase.co';const TLP_SUPABASE_KEY='eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imd3anRmY3JncHhjbGl4b25vZ3BlIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzAzMzQzOTUsImV4cCI6MjA4NTkxMDM5NX0.qM1-_VA1Dsx_nsWkeoAJvNWNgSuuwApPBGoJU32X3-I';const APP_NAME='training_hub';window.CloudSync={online:navigator.onLine,async save(k,d){localStorage.setItem(APP_NAME+'_'+k,JSON.stringify(d));if(!this.online)return{synced:false};try{const e=await fetch(TLP_SUPABASE_URL+'/rest/v1/app_data?app_data=eq.'+APP_NAME+'&data_key=eq.'+k+'&select=id',{headers:{apikey:TLP_SUPABASE_KEY,Authorization:'Bearer '+TLP_SUPABASE_KEY}}).then(r=>r.json());const m=e.length>0?'PATCH':'POST';const u=e.length>0?TLP_SUPABASE_URL+'/rest/v1/app_data?id=eq.'+e[0].id:TLP_SUPABASE_URL+'/rest/v1/app_data';await fetch(u,{method:m,headers:{apikey:TLP_SUPABASE_KEY,Authorization:'Bearer '+TLP_SUPABASE_KEY,'Content-Type':'application/json'},body:JSON.stringify(e.length>0?{data:d}:{app_data:APP_NAME,data_key:k,data:d})});return{synced:true};}catch(x){return{synced:false};}},async load(k){if(this.online){try{const r=await fetch(TLP_SUPABASE_URL+'/rest/v1/app_data?app_data=eq.'+APP_NAME+'&data_key=eq.'+k+'&select=data',{headers:{apikey:TLP_SUPABASE_KEY,Authorization:'Bearer '+TLP_SUPABASE_KEY}}).then(r=>r.json());if(r.length>0){localStorage.setItem(APP_NAME+'_'+k,JSON.stringify(r[0].data));return r[0].data;}}catch(x){}}const l=localStorage.getItem(APP_NAME+'_'+k);return l?JSON.parse(l):null;}};window.addEventListener('online',()=>CloudSync.online=true);window.addEventListener('offline',()=>CloudSync.online=false);</script>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Training Hub | The Light Park</title>
+  <!-- Unified Cloud Sync -->
+    <script src="https://thelightparkops.com/shared/cloud-sync.js"></script>
+    <title>Training Hub | The Light Park</title>
   <style>
     :root {
       --bg: #0B0D14;
