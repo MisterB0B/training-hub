@@ -409,6 +409,99 @@
   </div>
   
   <script>
+    // Training progress tracking
+    let trainingProgress = {};
+    let employees = [];
+    let currentEmployee = null;
+    
+    // Initialize
+    async function init() {
+      await loadEmployees();
+      await loadProgress();
+    }
+    
+    // Load employees from shared Employee App
+    async function loadEmployees() {
+      if (!window.TLPStaffSync) return;
+      
+      try {
+        employees = await TLPStaffSync.getStaff() || [];
+        console.log('[Training Hub] Loaded', employees.length, 'employees from Employee App');
+      } catch (e) {
+        console.error('[Training Hub] Could not load employees:', e);
+      }
+    }
+    
+    // Load training progress
+    async function loadProgress() {
+      if (!window.TLPStaffSync) {
+        const local = localStorage.getItem('tlp_training-progress');
+        if (local) {
+          trainingProgress = JSON.parse(local);
+        }
+        return;
+      }
+      
+      try {
+        const progress = await TLPStaffSync.getTrainingProgress();
+        if (progress && Array.isArray(progress)) {
+          // Convert array to lookup object
+          progress.forEach(p => {
+            if (!trainingProgress[p.employeeId]) {
+              trainingProgress[p.employeeId] = {};
+            }
+            trainingProgress[p.employeeId][p.moduleId] = p;
+          });
+        }
+        console.log('[Training Hub] Loaded training progress');
+      } catch (e) {
+        console.error('[Training Hub] Could not load progress:', e);
+      }
+    }
+    
+    // Save training progress
+    async function saveProgress() {
+      // Convert to array format for cloud
+      const progressArray = [];
+      Object.entries(trainingProgress).forEach(([employeeId, modules]) => {
+        Object.entries(modules).forEach(([moduleId, data]) => {
+          progressArray.push({
+            employeeId,
+            moduleId,
+            ...data
+          });
+        });
+      });
+      
+      // Save locally
+      localStorage.setItem('tlp_training-progress', JSON.stringify(trainingProgress));
+      
+      // Sync to cloud
+      if (window.TLPStaffSync) {
+        try {
+          await TLPStaffSync.saveTrainingProgress(progressArray);
+          console.log('[Training Hub] ✓ Progress synced to cloud');
+        } catch (e) {
+          console.error('[Training Hub] Sync failed:', e);
+        }
+      }
+    }
+    
+    // Mark a module complete for an employee
+    function completeModule(employeeId, moduleId) {
+      if (!trainingProgress[employeeId]) {
+        trainingProgress[employeeId] = {};
+      }
+      
+      trainingProgress[employeeId][moduleId] = {
+        status: 'completed',
+        completedDate: new Date().toISOString(),
+        score: 100
+      };
+      
+      saveProgress();
+    }
+    
     function toggleCheck(el) {
       el.classList.toggle('done');
       const text = el.nextElementSibling;
@@ -433,6 +526,9 @@
     function filterCategory(cat) {
       alert(`Filtering by: ${cat}\n\nThis would show only training materials for that category.`);
     }
+    
+    // Start
+    init();
   </script>
 </body>
 </html>
