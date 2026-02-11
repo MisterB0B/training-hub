@@ -5,7 +5,9 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <!-- Unified Cloud Sync -->
     <script src="https://thelightparkops.com/shared/cloud-sync.js"></script>
-  <script src="https://thelightparkops.com/shared/auth.js"></script>
+  <script src="/shared/supabase-auth.js"></script>
+  <script src="/shared/activity-logger.js"></script>
+  <script src="/shared/auth-gate.js" data-app="Training Hub" data-icon="📚"></script>
   <script src="https://thelightparkops.com/shared/permissions.js"></script>
     <title>Training Hub | The Light Park</title>
   <style>
@@ -530,11 +532,13 @@
     }
     
     function filterCategory(cat) {
-      alert(`Filtering by: ${cat}\n\nThis would show only training materials for that category.`);
+      showToast('Filtering: ' + cat, 'info');
     }
     
     // Start
     init();
   </script>
+<div id="lpToastBox" style="position:fixed;top:20px;right:20px;z-index:99999;display:flex;flex-direction:column;gap:10px;"></div>
+<script>function showToast(m,t,d){t=t||'info';d=d||4000;var b=document.getElementById('lpToastBox');var e=document.createElement('div');e.style.cssText='padding:14px 20px;border-radius:10px;font-size:14px;font-weight:500;max-width:380px;box-shadow:0 8px 24px rgba(0,0,0,0.4);color:#fff;background:'+(t==='success'?'rgba(34,197,94,0.95)':t==='error'?'rgba(239,68,68,0.95)':'rgba(59,130,246,0.95)');e.textContent=m;b.appendChild(e);setTimeout(function(){e.style.opacity='0';e.style.transition='opacity .3s';setTimeout(function(){e.remove()},300)},d)}</script>
 </body>
 </html>
